@@ -19,8 +19,14 @@ permissions:
   pull-requests: write
 
 jobs:
+  pick:
+    uses: ./.github/workflows/_runner-pick.yml
+
   build:
-    runs-on: ubuntu-latest
+    needs: pick
+    runs-on: ${{ needs.pick.outputs.use_depot == 'true' && 'depot-ubuntu-24.04-8' || 'ubuntu-latest' }}
+    env:
+      DEPOT_TOKEN: ${{ secrets.DEPOT_TOKEN }}
     strategy:
       fail-fast: false
       matrix:
